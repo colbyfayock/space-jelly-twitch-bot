@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "netlify build",
     "start": "netlify dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
