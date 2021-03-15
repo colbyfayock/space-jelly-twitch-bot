@@ -1,26 +1,45 @@
 require('dotenv').config();
 
-const tmi = require('tmi.js');
+const fetch = require('node-fetch');
 
-const client = new tmi.Client({
-	connection: {
-    reconnect: true
-  },
-	channels: [
-    'trostcodes'
-  ]
-});
+const { getClient } = require('./lib/twitch');
+const { getCommand, execCommand } = require('./lib/command');
+const { isAuthorized } = require('./lib/auth');
+
+const client = getClient();
 
 client.connect();
 
-client.on('message', (channel, tags, message, self) => {
+client.on('connected', (addr, port) => {
+  console.log(`* Connected to ${addr}:${port}`);
+});
 
+client.on('message', async (target, context, message) => {
+  const datetime = new Date(parseInt('1615657726963')).toISOString();
 
-  console.log('channel', channel)
-  console.log('tags', tags)
-  console.log('message', message)
-  console.log('self', self)
+  const user = {
+    badges: context.badges,
+    badgesRaw: context['badges-raw'],
+    badgeInfo: context['badge-info'],
+    badgeInfoRaw: context['badge-info-raw'],
+    displayName: context['display-name'],
+    id: context['user-id'],
+    isMod: context.mod,
+    isSubscriber: context.subscriber,
+    userType: context['user-type'],
+    username: context.username
+  }
 
-	// "Alca: Hello, World!"
-	console.log(`${tags['display-name']}: ${message}`);
+  const prefix = `[Message] ${datetime} - ${user.id || 'Me'}`;
+
+  console.log(`${prefix} - Message: ${message}`);
+
+  const command = getCommand(message);
+
+  if ( command && isAuthorized(message, user) ) {
+    execCommand({
+      ...command,
+      target
+    });
+  }
 });
