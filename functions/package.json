@@ -4,14 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "netlify build",
-    "start": "netlify dev",
+    "build": "netlify-lambda build src",
+    "serve": "netlify-lambda serve src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "netlify-cli": "^3.10.11"
+    "netlify-lambda": "^2.0.3"
   }
 }

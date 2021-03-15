@@ -3,43 +3,34 @@ require('dotenv').config();
 const fetch = require('node-fetch');
 
 const { getClient } = require('./lib/twitch');
-const { getCommand, execCommand } = require('./lib/command');
-const { isAuthorized } = require('./lib/auth');
+const { getCommandFromMessage, execCommand } = require('./lib/command');
+const User = require('./models/user');
+
+const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
 
 const client = getClient();
 
 client.connect();
 
 client.on('connected', (addr, port) => {
-  console.log(`* Connected to ${addr}:${port}`);
+  const datetime = new Date().toISOString();
+  console.log(`${prefix} - ${datetime} - Connected to ${addr}:${port} in channels ${process.env.TWITCH_CHANNELS}`);
 });
 
 client.on('message', async (target, context, message) => {
-  const datetime = new Date(parseInt('1615657726963')).toISOString();
+  const datetime = new Date().toISOString();
 
-  const user = {
-    badges: context.badges,
-    badgesRaw: context['badges-raw'],
-    badgeInfo: context['badge-info'],
-    badgeInfoRaw: context['badge-info-raw'],
-    displayName: context['display-name'],
-    id: context['user-id'],
-    isMod: context.mod,
-    isSubscriber: context.subscriber,
-    userType: context['user-type'],
-    username: context.username
-  }
+  const user = new User().ingestFromContext(context);
 
-  const prefix = `[Message] ${datetime} - ${user.id || 'Me'}`;
+  const command = getCommandFromMessage(message);
 
-  console.log(`${prefix} - Message: ${message}`);
+  if ( command ) {
+    console.log(`${prefix} - ${datetime} - ${user.id} - Command: ${message}`);
 
-  const command = getCommand(message);
-
-  if ( command && isAuthorized(message, user) ) {
-    execCommand({
+    await execCommand({
       ...command,
-      target
+      target,
+      user
     });
   }
 });

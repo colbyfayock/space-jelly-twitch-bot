@@ -1,27 +1,27 @@
 const { getClient } = require('./twitch');
+const { isAuthorized } = require('./auth');
 
 const regexpCommand = new RegExp(/^(?:sudo\W)?!([a-zA-Z0-9]+)(?:\W+)?(.*)?/);
+const regexpSudo = new RegExp(/^sudo/);
 
-const AVAILABLE_COMMANDS = {
-  spacejelly: {
-    response: 'https://spacejelly.dev'
-  }
-}
+const AVAILABLE_COMMANDS = require('../commands');
 
 /**
- * getCommand
+ * getCommandFromMessage
  */
 
-function getCommand(message) {
+function getCommandFromMessage(message) {
   if ( !isCommand(message) ) return;
   const [raw, command, argument] = message.match(regexpCommand);
+  const isSudo = regexpSudo.test(message);
   return {
     command,
-    argument
+    argument,
+    isSudo
   };
 }
 
-module.exports.getCommand = getCommand;
+module.exports.getCommandFromMessage = getCommandFromMessage;
 
 /**
  * isCommand
@@ -37,9 +37,23 @@ module.exports.isCommand = isCommand;
  * execCommand
  */
 
-function execCommand({ target, command, argument }) {
+async function execCommand({ command, argument, isSudo, target, user } = {}) {
   const client = getClient();
   const commandToExec = AVAILABLE_COMMANDS[command];
+
+  if ( !isAuthorized({ command: commandToExec, isSudo, user }) ) {
+    client.say(target, `Oops, you don't have access to run !${command}!`);
+    return false;
+  }
+
+  const { onCommand } = commandToExec;
+
+  if ( typeof onCommand === 'function' ) {
+    await onCommand({
+      argument,
+      user
+    });
+  }
 
   if ( commandToExec ) {
     client.say(target, commandToExec.response);
