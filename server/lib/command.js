@@ -56,7 +56,27 @@ async function execCommand({ command, argument, isSudo, target, user } = {}) {
   }
 
   if ( commandToExec ) {
-    client.say(target, commandToExec.response);
+
+    let response = commandToExec && commandToExec.response;
+
+    if ( typeof commandToExec.response == 'function') {
+      try {
+        response = await commandToExec.response({
+          argument,
+          user
+        });
+      } catch(e) {
+        console.log(`Error executing command: ${e}`);
+        response = 'Oops, something went wrong attemping that command.';
+      }
+    }
+
+    if ( !Array.isArray(response) ) {
+      response = [response];
+    }
+
+    response.forEach(r => client.say(target, r));
+
     return true;
   } else {
     client.say(target, `Oops, I don't understand the command !${command} yet!`);
