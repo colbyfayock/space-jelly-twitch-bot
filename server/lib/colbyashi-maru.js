@@ -44,7 +44,7 @@ function getUpcomingFromEpisodes(episodes) {
 
   let index = 0;
 
-  if ( today.id === future[index].id ) {
+  if ( today && today.id === future[index].id ) {
     index = index + 1;
   }
 
