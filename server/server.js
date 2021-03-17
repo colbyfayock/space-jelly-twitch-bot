@@ -6,6 +6,19 @@ const User = require('./models/user');
 
 const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
 
+const hellos = [
+  'Hey',
+  'Welcome',
+  'Greetings',
+  'You made it',
+  'Howdy',
+  'Yo',
+  'Hey there',
+  'Ahoy',
+  'Hello',
+  'Hey hey'
+]
+
 /**
  * Twitch Client
  */
@@ -43,10 +56,15 @@ client.on('subscription', (channel, userName, methods, message, tags) => {
   client.say(channel, `Thanks ${userName} for the sub!`);
 });
 
-client.on('join', (channel, nickName) => {
+client.on('join', (channel, userName) => {
   const datetime = new Date().toISOString();
-  console.log(`${prefix} - ${datetime} - join - ${nickName}`);
-  client.say(channel, `Welcome ${nickName}!`);
+  console.log(`${prefix} - ${datetime} - join - ${userName}`);
+
+  if ( userName === process.env.TWITCH_BOT_USERNAME ) return;
+
+  const hello = hellos[Math.floor(Math.random() * hellos.length)];
+
+  client.say(channel, `${hello} ${userName}!`);
 });
 
 client.on('cheer', (channel, tags, message) => {
