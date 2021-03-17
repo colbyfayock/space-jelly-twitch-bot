@@ -60,11 +60,11 @@ client.on('join', (channel, userName) => {
   const datetime = new Date().toISOString();
   console.log(`${prefix} - ${datetime} - join - ${userName}`);
 
-  if ( userName === process.env.TWITCH_BOT_USERNAME ) return;
+  // if ( userName === process.env.TWITCH_BOT_USERNAME ) return;
 
-  const hello = hellos[Math.floor(Math.random() * hellos.length)];
+  // const hello = hellos[Math.floor(Math.random() * hellos.length)];
 
-  client.say(channel, `${hello} ${userName}!`);
+  // client.say(channel, `${hello} ${userName}!`);
 });
 
 client.on('cheer', (channel, tags, message) => {
