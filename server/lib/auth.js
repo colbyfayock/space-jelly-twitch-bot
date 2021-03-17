@@ -5,7 +5,7 @@
 function isAuthorized({ command, isSudo, user }) {
   if ( user.isAdmin() ) return true;
 
-  const { access } = command;
+  const { access = [] } = command;
 
   if ( access.includes('admin') ) return false;
 
