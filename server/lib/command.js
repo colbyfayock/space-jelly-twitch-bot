@@ -37,12 +37,12 @@ module.exports.isCommand = isCommand;
  * execCommand
  */
 
-async function execCommand({ command, argument, isSudo, target, user } = {}) {
+async function execCommand({ command, argument, isSudo, channel, user } = {}) {
   const client = getClient();
   const commandToExec = AVAILABLE_COMMANDS[command];
 
   if ( !isAuthorized({ command: commandToExec, isSudo, user }) ) {
-    client.say(target, `Oops, you don't have access to run !${command}!`);
+    client.say(channel, `Oops, you don't have access to run !${command}!`);
     return false;
   }
 
@@ -75,11 +75,11 @@ async function execCommand({ command, argument, isSudo, target, user } = {}) {
       response = [response];
     }
 
-    response.forEach(r => client.say(target, r));
+    response.forEach(r => client.say(channel, r));
 
     return true;
   } else {
-    client.say(target, `Oops, I don't understand the command !${command} yet!`);
+    client.say(channel, `Oops, I don't understand the command !${command} yet!`);
     return false;
   }
 }
