@@ -36,3 +36,15 @@ client.on('message', async (target, context, message) => {
     });
   }
 });
+
+client.on('subscription', async (target, context, message) => {
+  const user = new User().ingestFromContext(context);
+
+  client.say(target, `Thanks ${user.userName} for the sub!`);
+});
+
+client.on('join', async (target, context, message) => {
+  const user = new User().ingestFromContext(context);
+
+  client.say(target, `Welcome ${user.userName}!`);
+});

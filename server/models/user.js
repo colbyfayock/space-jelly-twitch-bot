@@ -11,10 +11,10 @@ class User {
     this.mod = context.mod;
     this.subscriber = context.subscriber;
     this.userType = context['user-type'];
-    this.username = context.username;
+    this.userName = context.userName;
 
-    if ( !this.id && process.env.TWITCH_BOT_USERNAME === this.username ) {
-      this.id = this.username;
+    if ( !this.id && process.env.TWITCH_BOT_USERNAME === this.userName ) {
+      this.id = this.userName;
     }
 
     return this;
@@ -22,7 +22,7 @@ class User {
 
   isAdmin() {
     const admins = process.env.TWITCH_CHANNEL_ADMINS.split(',');
-    return admins.includes(this.username);
+    return admins.includes(this.userName);
   }
 
   isMod() {
