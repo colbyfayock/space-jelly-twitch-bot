@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "date-fns": "^2.19.0",
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1",
     "tmi.js": "^1.7.5"

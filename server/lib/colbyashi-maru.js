@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const { sortObjectsByDate, dateIsFuture } = require('./datetime');
+const { findNextAfterToday, findToday } = require('./datetime');
 
 /**
  * getEpisodes
@@ -19,15 +19,8 @@ module.exports.getEpisodes = getEpisodes;
  */
 
 function getTodayFromEpisodes(episodes) {
-  return episodes.find(({ date }) => {
-    const epiDate = new Date(date);
-    const epiMonth = epiDate.getMonth();
-    const epiDay = epiDate.getDate();
-    const todayDate = new Date();
-    const todayMonth = todayDate.getMonth();
-    const todayDay = todayDate.getDate() + 2;
-    return epiDay === todayDay && epiMonth === todayMonth;
-  });
+  const episode = findToday(episodes);
+  return episode;
 }
 
 module.exports.getTodayFromEpisodes = getTodayFromEpisodes;
@@ -37,18 +30,8 @@ module.exports.getTodayFromEpisodes = getTodayFromEpisodes;
  */
 
 function getUpcomingFromEpisodes(episodes) {
-  const sorted = sortObjectsByDate(episodes).reverse();
-
-  const today = getTodayFromEpisodes(sorted);
-  const future = sorted.filter(({ date }) => dateIsFuture(date));
-
-  let index = 0;
-
-  if ( today && today.id === future[index].id ) {
-    index = index + 1;
-  }
-
-  return future[index];
+  const episode = findNextAfterToday(episodes);
+  return episode;
 }
 
 module.exports.getUpcomingFromEpisodes = getUpcomingFromEpisodes;

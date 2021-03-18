@@ -24,7 +24,11 @@ module.exports = {
       const episodes = await getEpisodes();
       const today = getTodayFromEpisodes(episodes);
 
-      if ( !today ) throw new Error('Can not find episode for today');
+      if ( !today ) {
+        const error = new Error('Can not find episode for today')
+        error.name = 'NO_EPISODE';
+        throw error;
+      }
 
       const { title, name, twitterhandle } = today;
 
@@ -42,7 +46,11 @@ module.exports = {
       const episodes = await getEpisodes();
       const today = getTodayFromEpisodes(episodes);
 
-      if ( !today ) throw new Error('Can not find episode for today');
+      if ( !today ) {
+        const error = new Error('Can not find episode for today')
+        error.name = 'NO_EPISODE';
+        throw error;
+      }
 
       const { title, name, twitterhandle } = today;
 

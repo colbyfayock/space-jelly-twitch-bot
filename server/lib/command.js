@@ -67,7 +67,11 @@ async function execCommand({ command, argument, isSudo, channel, user } = {}) {
         });
       } catch(e) {
         console.log(`Error executing command: ${e}`);
-        response = 'Oops, something went wrong attemping that command.';
+        if ( e.name === 'NO_EPISODE' ) {
+          response = 'No episode playing at the moment. Check back later or see whats coming with !upcoming.'
+        } else {
+          response = 'Oops, something went wrong attemping that command.';
+        }
       }
     }
 
