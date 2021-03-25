@@ -38,6 +38,9 @@ module.exports = {
   host: {
     response: 'Colby Fayock https://twitter.com/colbyfayock'
   },
+  notfound: {
+    response: 'Oops, command not found. Try running !help'
+  },
   spacejelly: {
     response: 'https://spacejelly.dev'
   },

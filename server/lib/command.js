@@ -39,7 +39,11 @@ module.exports.isCommand = isCommand;
 
 async function execCommand({ command, argument, isSudo, channel, user } = {}) {
   const client = getClient();
-  const commandToExec = AVAILABLE_COMMANDS[command];
+  let commandToExec = AVAILABLE_COMMANDS[command];
+
+  if ( !commandToExec ) {
+    commandToExec = AVAILABLE_COMMANDS.notfound;
+  }
 
   if ( !isAuthorized({ command: commandToExec, isSudo, user }) ) {
     client.say(channel, `Oops, you don't have access to run !${command}!`);
@@ -79,7 +83,11 @@ async function execCommand({ command, argument, isSudo, channel, user } = {}) {
       response = [response];
     }
 
-    response.forEach(r => client.say(channel, r));
+    response.forEach((r, index) => {
+      setTimeout(() => {
+        client.say(channel, r)
+      }, index * 200);
+    });
 
     return true;
   } else {

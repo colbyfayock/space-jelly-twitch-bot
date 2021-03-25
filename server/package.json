@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -14,5 +14,8 @@
     "dotenv": "^8.2.0",
     "node-fetch": "^2.6.1",
     "tmi.js": "^1.7.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
