@@ -36,7 +36,7 @@ server.on('request', app);
 
 server.listen(port, () => {
   const datetime = new Date().toISOString();
-  console.log(`${pref} - ${datetime} - HTTP - Server started on port ${port}`);
+  console.log(`${prefix} - ${datetime} - HTTP - Server started on port ${port}`);
 });
 
 /**
