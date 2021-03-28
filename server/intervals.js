@@ -36,7 +36,7 @@ module.exports = {
 
   questions: {
     init: async ({ config = {} } = {}) => {
-      const { client, prefix } = config;
+      const { client, prefix, globals } = config;
       const { channels, userstate } = client;
       const datetime = new Date().toISOString();
 
