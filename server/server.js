@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+const express = require('express');
+
 const { getClient } = require('./lib/twitch');
 const { getCommandFromMessage, execCommand } = require('./lib/command');
 const User = require('./models/user');
@@ -7,6 +9,29 @@ const User = require('./models/user');
 const intervals = require('./intervals');
 
 const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
+
+/**
+ * HTTP
+ */
+
+const app = express();
+const port = process.env.PORT || 9090;
+
+app.listen(port, () => {
+  console.log(`${prefix} - HTTP - Listening at http://localhost:${port}`)
+});
+
+app.get('/spacejelly', function (req, res) {
+  console.log(`${prefix} - HTTP - GET /spacejelly`);
+  res.send({
+    author: {
+      name: 'Colby Fayock',
+      url: 'https://twitter.com/colbyfayock'
+    },
+    name: 'Space Jelly',
+    url: 'https://spacejelly.dev/'
+  });
+});
 
 /**
  * Twitch Client
