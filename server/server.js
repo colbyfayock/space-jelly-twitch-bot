@@ -22,7 +22,7 @@ const port = process.env.PORT || process.env.SERVER_PORT;
 
 app.get('/spacejelly', function (req, res) {
   console.log(`${prefix} - HTTP - GET /spacejelly`);
-  res.send({
+  return res.send({
     author: {
       name: 'Colby Fayock',
       url: 'https://twitter.com/colbyfayock'
