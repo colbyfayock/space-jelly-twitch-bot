@@ -63,9 +63,9 @@ module.exports = {
       const { channels, userstate } = client;
       const datetime = new Date().toISOString();
 
-      console.log(`${prefix} - ${datetime} - Time left for channels ${channels.join(', ')}`);
-
       if ( globals.cmtimer && globals.cmtimer.isActive ) {
+        console.log(`${prefix} - ${datetime} - Time left for channels ${channels.join(', ')}`);
+
         channels.forEach(async channel => {
           const user = new User().ingestFromContext(userstate[channel]);
           await execCommand({
