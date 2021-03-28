@@ -18,7 +18,7 @@ const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
 
 const app = express();
 const server = http.createServer(app);
-const port = process.env.PORT || process.env.SOCKET_PORT;
+const port = process.env.PORT || process.env.SERVER_PORT;
 
 app.get('/spacejelly', function (req, res) {
   console.log(`${prefix} - HTTP - GET /spacejelly`);
@@ -36,7 +36,7 @@ server.on('request', app);
 
 server.listen(port, () => {
   const datetime = new Date().toISOString();
-  console.log(`${this.logPrefix} - ${datetime} - Socket - Server started on port ${port}`);
+  console.log(`${this.logPrefix} - ${datetime} - HTTP - Server started on port ${port}`);
 });
 
 /**
