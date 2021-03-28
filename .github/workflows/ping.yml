@@ -1,0 +1,20 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Ping
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+  
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: curl
+      uses: wei/curl@master
+      with:
+        args: https://space-jelly-twitch-bot.herokuapp.com/spacejelly
