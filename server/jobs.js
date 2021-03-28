@@ -7,7 +7,7 @@ module.exports = {
     on: 'message',
     handler: async (config, channel, context, message) => {
       const { prefix } = config;
-      console.log('message', message);
+
       const datetime = new Date().toISOString();
 
       const user = new User().ingestFromContext(context);
