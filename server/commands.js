@@ -1,4 +1,3 @@
-const ApiRequest = require('./models/api-request');
 const Timer = require('./models/timer');
 const { getEpisodes, getTodayFromEpisodes, getUpcomingFromEpisodes } = require('./lib/colbyashi-maru');
 const { parseHumanTime } = require('./lib/datetime');
@@ -78,6 +77,18 @@ module.exports = {
       const seconds = secondsLeftFloor - (minutesLeftFloor * 60);
 
       return `${minutesLeftFloor} minutes and ${seconds} seconds left!`;
+    },
+    onCommand: ({ config }) => {
+      const { socket, globals } = config;
+      const time = globals.cmtimer.timeLeft;
+
+      socket.broadcast({
+        type: 'command',
+        command: 'timeleft',
+        data: {
+          time
+        }
+      })
     }
   },
   today: {

@@ -1,5 +1,10 @@
+const fetch = require('node-fetch');
+
 const { getCommandFromMessage, execCommand } = require('./lib/command');
 const User = require('./models/user');
+
+const SECONDS_TO_MS_MULTIPLIER = 1000;
+const MINUTES_TO_MS_MULTIPLIER = 60 * 1000;
 
 module.exports = {
 
@@ -26,7 +31,34 @@ module.exports = {
         });
       });
     },
-    time: 60 * 30 * 1000
+    time: 30 * MINUTES_TO_MS_MULTIPLIER
+  },
+
+  /**
+   * keepalive
+   * @description Regularly self-ping to keep Heroku instance alive
+   */
+
+  keepalive: {
+    handler: async ({ config = {} } = {}) => {
+      const { prefix } = config;
+      const datetime = new Date().toISOString();
+
+      try {
+        const data = await fetch(`${process.env.SERVER_ENDPOINT}/spacejelly`);
+        const { name } = await data.json();
+
+        if ( name !== 'Space Jelly' ) {
+          throw new Error('Body is not valid');
+        }
+
+        console.log(`${prefix} - ${datetime} - Keeping server alive`);
+      } catch(e) {
+        console.log(`${prefix} - ${datetime} - Failed to keep server alive: ${e}`);
+        throw e;
+      }
+    },
+    time: 10 * MINUTES_TO_MS_MULTIPLIER
   },
 
   /**
@@ -54,7 +86,7 @@ module.exports = {
         });
       }
     },
-    time: 60 * 15 * 1000
+    time: 15 * MINUTES_TO_MS_MULTIPLIER
   },
 
   timeleft: {
@@ -82,7 +114,7 @@ module.exports = {
         }
       }
     },
-    time: 1000
+    time: 1 * SECONDS_TO_MS_MULTIPLIER
   }
 
 }
