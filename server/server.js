@@ -18,7 +18,7 @@ const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
 
 const app = express();
 const server = http.createServer(app);
-const port = process.env.SERVER_PORT;
+const port = process.env.PORT || process.env.SERVER_PORT;
 
 app.listen(port, () => {
   console.log(`${prefix} - HTTP - Listening at http://localhost:${port}`)
