@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - run: |
-        apk add curl
-        NAME=`curl https://space-jelly-twitch-bot.herokuapp.com/spacejelly | jq '.name'`
-        echo $NAME
+    - name: curl
+      uses: wei/curl@master
+      with:
+        args: https://space-jelly-twitch-bot.herokuapp.com/spacejelly
