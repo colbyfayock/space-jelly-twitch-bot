@@ -1,6 +1,7 @@
 const ApiRequest = require('./models/api-request');
+const Timer = require('./models/timer');
 const { getEpisodes, getTodayFromEpisodes, getUpcomingFromEpisodes } = require('./lib/colbyashi-maru');
-
+const { parseHumanTime } = require('./lib/datetime');
 
 /**
  * @TODO
@@ -41,8 +42,43 @@ module.exports = {
   notfound: {
     response: 'Oops, command not found. Try running !help'
   },
+  questions: {
+    response: '🧐 Have any questions? Make sure to ask away in the chat!'
+  },
   spacejelly: {
     response: 'https://spacejelly.dev'
+  },
+  timeleft: {
+    response: ({ config, argument: type }) => {
+      const isBot = type === 'bot';
+      const { globals } = config;
+      const time = globals.cmtimer.timeLeft;
+
+      const secondsLeft = time / 1000;
+      const secondsLeftFloor = Math.floor(secondsLeft);
+      const minutesLeft = secondsLeftFloor / 60;
+      const minutesLeftFloor = Math.floor(minutesLeft);
+
+      const minuteIntervals = [ 59, 45, 30, 15, 10 ];
+
+      if ( minuteIntervals.includes(minutesLeft) ) {
+        return `${minutesLeft} minutes remaining!`
+      }
+
+      if ( secondsLeftFloor < 1 ) {
+        return `👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾`
+      }
+
+      if ( secondsLeftFloor <= 11 ) {
+        return `${secondsLeftFloor} seconds remaining!`
+      }
+
+      if ( isBot ) return;
+
+      const seconds = secondsLeftFloor - (minutesLeftFloor * 60);
+
+      return `${minutesLeftFloor} minutes and ${seconds} seconds left!`;
+    }
   },
   today: {
     response: async () => {
@@ -81,43 +117,78 @@ module.exports = {
    * Colbyashi Maru Timer
    */
 
-  cmstart: {
+  cmadd: {
     access: ['admin'],
-    response: '3... 2... 1... go!',
-    onCommand: async () => {
-      const request = new ApiRequest('/cm-timer');
-      const response = await request.post({
-        data: {
-          action: 'start'
-        }
-      });
-      return response;
+    response: ({ argument: time }) => {
+      const timeToAdd = parseHumanTime(time);
+      return `Adding ${timeToAdd.number} ${timeToAdd.unit} to the clock!`
+    },
+    onCommand: ({ argument: time, config }) => {
+      const timeToAdd = parseHumanTime(time);
+
+      if ( !config.globals.cmtimer || !config.globals.cmtimer.isActive) {
+        const error = new Error('Failed to add time: No active timer');
+        error.name = 'NO_ACTIVE_TIMER';
+        throw error;
+      }
+
+      if ( timeToAdd.unit === 'seconds' ) {
+        config.globals.cmtimer.add(timeToAdd.number * 1000);
+      } else if ( timeToAdd.unit === 'minutes' ) {
+        config.globals.cmtimer.add(timeToAdd.number * 60 * 1000);
+      }
     }
   },
-  cmstop: {
+  cmstart: {
     access: ['admin'],
-    response: 'Clock officially stopped.',
-    onCommand: async () => {
-      const request = new ApiRequest('/cm-timer');
-      const response = await request.post({
-        data: {
-          action: 'stop'
-        }
-      });
-      return response;
+    response: [
+      '60 minutes on the clock!',
+      `3... 2... 1... Let's gooooo!`
+    ],
+    onCommand: ({ config }) => {
+      if ( config.globals.cmtimer ) {
+        config.globals.cmtimer.start();
+        return;
+      }
+
+      config.globals.cmtimer = new Timer(60 * 60 * 1000);
+      config.globals.cmtimer.start();
     }
   },
   cmpause: {
     access: ['admin'],
     response: 'Taking a quick break.',
-    onCommand: async () => {
-      const request = new ApiRequest('/cm-timer');
-      const response = await request.post({
-        data: {
-          action: 'pause'
-        }
-      });
-      return response;
+    onCommand: async ({ config }) => {
+      config.globals.cmtimer.stop();
+    }
+  },
+  cmremove: {
+    access: ['admin'],
+    response: ({ argument: time }) => {
+      const timeToAdd = parseHumanTime(time);
+      return `Removing ${timeToAdd.number} ${timeToAdd.unit} from the clock!`
+    },
+    onCommand: ({ argument: time, config }) => {
+      const timeToAdd = parseHumanTime(time);
+
+      if ( !config.globals.cmtimer || !config.globals.cmtimer.isActive) {
+        const error = new Error('Failed to remove time: No active timer');
+        error.name = 'NO_ACTIVE_TIMER';
+        throw error;
+      }
+
+      if ( timeToAdd.unit === 'seconds' ) {
+        config.globals.cmtimer.remove(timeToAdd.number * 1000);
+      } else if ( timeToAdd.unit === 'minutes' ) {
+        config.globals.cmtimer.remove(timeToAdd.number * 60 * 1000);
+      }
+    }
+  },
+  cmstop: {
+    access: ['admin'],
+    response: 'Clock officially stopped.',
+    onCommand: ({ config }) => {
+      config.globals.cmtimer = null;
     }
   }
 }

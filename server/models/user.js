@@ -11,7 +11,7 @@ class User {
     this.mod = context.mod;
     this.subscriber = context.subscriber;
     this.userType = context['user-type'];
-    this.userName = context.userName;
+    this.userName = context.userName || this.displayName.toLowerCase();
 
     if ( !this.id && process.env.TWITCH_BOT_USERNAME === this.userName ) {
       this.id = this.userName;

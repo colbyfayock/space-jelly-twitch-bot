@@ -37,7 +37,7 @@ module.exports.isCommand = isCommand;
  * execCommand
  */
 
-async function execCommand({ command, argument, isSudo, channel, user } = {}) {
+async function execCommand({ command, argument, isSudo, channel, user, config } = {}) {
   const client = getClient();
   let commandToExec = AVAILABLE_COMMANDS[command];
 
@@ -53,10 +53,29 @@ async function execCommand({ command, argument, isSudo, channel, user } = {}) {
   const { onCommand } = commandToExec;
 
   if ( typeof onCommand === 'function' ) {
-    await onCommand({
-      argument,
-      user
-    });
+    try {
+      await onCommand({
+        argument,
+        user,
+        config
+      });
+    } catch(e) {
+      console.log(`Error executing command: ${e}`);
+
+      console.log('e.name', e.name);
+
+      if ( e.name === 'TIMER_EXISTS' ) {
+        client.say(channel, 'A timer was already started! Try stopping the existing one first.');
+      } else if ( e.name === 'INVALID_TIME_FORMAT' || e.name === 'INVALID_TIME_UNIT' || e.name === 'INVALID_TIME_NUMBER' ) {
+        client.say(channel, 'Hm... something looks wrong with the time format!');
+      } else if ( e.name === 'NO_ACTIVE_TIMER' ) {
+        client.say(channel, 'Uh oh, there are no active timers running!');
+      } else {
+        client.say(channel, 'Oops, something went wrong attemping that command.');
+      }
+
+      return;
+    }
   }
 
   if ( commandToExec ) {
@@ -67,7 +86,8 @@ async function execCommand({ command, argument, isSudo, channel, user } = {}) {
       try {
         response = await commandToExec.response({
           argument,
-          user
+          user,
+          config
         });
       } catch(e) {
         console.log(`Error executing command: ${e}`);
@@ -78,6 +98,8 @@ async function execCommand({ command, argument, isSudo, channel, user } = {}) {
         }
       }
     }
+
+    if ( !response ) return false;
 
     if ( !Array.isArray(response) ) {
       response = [response];

@@ -4,22 +4,9 @@ const { getClient } = require('./lib/twitch');
 const { getCommandFromMessage, execCommand } = require('./lib/command');
 const User = require('./models/user');
 
+const intervals = require('./intervals');
+
 const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
-
-const hellos = [
-  'Hey',
-  'Welcome',
-  'Greetings',
-  'You made it',
-  'Howdy',
-  'Yo',
-  'Hey there',
-  'Ahoy',
-  'Hello',
-  'Hey hey'
-];
-
-const HELP_INTERVAL = 60 * 15 * 1000;
 
 /**
  * Twitch Client
@@ -29,27 +16,27 @@ const client = getClient();
 
 client.connect();
 
+const config = {
+  client,
+  prefix,
+  globals: {}
+}
+
 /**
- * Help Poll
- * @description Regularly ping connected channels with !help command per HELP_INTERVAL
+ * Intervals
+ * @description
  */
 
-setInterval(async () => {
-  const datetime = new Date().toISOString();
+Object.keys(intervals).forEach(key => {
+  const { init, time } = intervals[key];
 
-  const { channels, userstate } = client;
-
-  channels.forEach(async channel => {
-    const user = new User().ingestFromContext(userstate[channel]);
-    await execCommand({
-      command: 'help',
-      channel,
-      user
-    });
-  });
-
-  console.log(`${prefix} - ${datetime} - Helping channels ${channels.join(', ')}`);
-}, HELP_INTERVAL);
+  const interval = setInterval(() => {
+    init({
+      config,
+      interval
+    })
+  }, time);
+});
 
 /**
  * Event: connected
@@ -77,7 +64,8 @@ client.on('message', async (channel, context, message) => {
     await execCommand({
       ...command,
       channel,
-      user
+      user,
+      config
     });
     console.log(`${prefix} - ${datetime} - ${user.id} - Command: ${JSON.stringify(command)}`);
   }

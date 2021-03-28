@@ -94,3 +94,64 @@ function findNextAfterToday(items, key = 'date') {
 }
 
 module.exports.findNextAfterToday = findNextAfterToday;
+
+/**
+ * parseHumanTime
+ */
+
+function parseHumanTime(string) {
+  const units = {
+    'm': 'minutes',
+    'min': 'minutes',
+    'mins': 'minutes',
+    'minutes': 'minutes',
+    's': 'seconds',
+    'sec': 'seconds',
+    'secs': 'seconds',
+    'seconds': 'seconds'
+  };
+  const numbers = [];
+  const letters = [];
+
+  string.split('').forEach(char => {
+    if ( char === ' ' ) return;
+
+    if ( isNaN(parseInt(char)) ) {
+      letters.push(char);
+      return;
+    }
+
+    if ( letters.length === 0 ) {
+      numbers.push(char);
+      return;
+    }
+
+    const error = new Error('Invalid time. Format is not recognizable.');
+    error.name = 'INVALID_TIME_FORMAT';
+    throw error;
+  });
+
+  const number = parseInt(numbers.join(''));
+  const letter = letters.join('');
+
+  const unit = units[letter];
+
+  if ( isNaN(number) ) {
+    const error = new Error('Invalid time. Can not recognize number.');
+    error.name = 'INVALID_TIME_NUMBER';
+    throw error;
+  }
+
+  if ( !unit ) {
+    const error = new Error('Invalid time. Can not recognize unit.');
+    error.name = 'INVALID_TIME_UNIT';
+    throw error;
+  }
+
+  return {
+    number,
+    unit
+  }
+}
+
+module.exports.parseHumanTime = parseHumanTime;
