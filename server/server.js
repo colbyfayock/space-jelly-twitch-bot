@@ -1,7 +1,7 @@
 require('dotenv').config();
 
-const http = require('http');
 const express = require('express');
+const http = require('http');
 const { Server } = require('ws');
 
 const { getClient } = require('./lib/twitch');
@@ -18,11 +18,7 @@ const prefix = `[${process.env.TWITCH_BOT_USERNAME}]`;
 
 const app = express();
 const server = http.createServer(app);
-const port = process.env.PORT || process.env.SERVER_PORT;
-
-app.listen(port, () => {
-  console.log(`${prefix} - HTTP - Listening at http://localhost:${port}`)
-});
+const port = process.env.PORT || process.env.SOCKET_PORT;
 
 app.get('/spacejelly', function (req, res) {
   console.log(`${prefix} - HTTP - GET /spacejelly`);
@@ -34,6 +30,13 @@ app.get('/spacejelly', function (req, res) {
     name: 'Space Jelly',
     url: 'https://spacejelly.dev/'
   });
+});
+
+server.on('request', app);
+
+server.listen(port, () => {
+  const datetime = new Date().toISOString();
+  console.log(`${this.logPrefix} - ${datetime} - Socket - Server started on port ${port}`);
 });
 
 /**

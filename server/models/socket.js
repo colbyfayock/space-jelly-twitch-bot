@@ -1,16 +1,17 @@
 const { Server } = require('ws');
 
+
+
 class Socket {
-  constructor({ server, logPrefix, path, port = process.env.SOCKET_PORT } = {}) {
+  constructor({ server, logPrefix, path } = {}) {
     this.logPrefix = logPrefix;
     this.start({
       server,
-      path,
-      port
+      path
     });
   }
 
-  start({ server, path, port }) {
+  start({ server, path }) {
     this.server = new Server({
       server,
       path
@@ -24,11 +25,6 @@ class Socket {
     this.server.on('close', () => {
       const datetime = new Date().toISOString();
       console.log(`${this.logPrefix} - ${datetime} - Socket - Disconnected`);
-    });
-
-    server.listen(port, () => {
-      const datetime = new Date().toISOString();
-      console.log(`${this.logPrefix} - ${datetime} - Socket - Server started on port ${port}`);
     });
   }
 
