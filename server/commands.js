@@ -59,17 +59,17 @@ module.exports = {
       const minutesLeft = secondsLeftFloor / 60;
       const minutesLeftFloor = Math.floor(minutesLeft);
 
-      const minuteIntervals = [ 59, 45, 30, 15, 10 ];
+      const minuteIntervals = [ 45, 30, 15, 10, 5 ];
+
+      if ( secondsLeft < 1 ) {
+        return `👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾`
+      }
 
       if ( minuteIntervals.includes(minutesLeft) ) {
         return `${minutesLeft} minutes remaining!`
       }
 
-      if ( secondsLeftFloor < 1 ) {
-        return `👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾 GAME OVER 👾`
-      }
-
-      if ( secondsLeftFloor <= 11 ) {
+      if ( secondsLeftFloor < 11 ) {
         return `${secondsLeftFloor} seconds remaining!`
       }
 

@@ -77,6 +77,10 @@ module.exports = {
           });
         });
       }
+
+      if ( globals.cmtimer.timeleft <= 0 ) {
+        globals.cmtimer.stop();
+      }
     },
     time: 1000
   }

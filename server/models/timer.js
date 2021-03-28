@@ -51,13 +51,8 @@ class Timer {
     if ( !this.end ) return this.remaining;
 
     const currentTime = Date.now();
-    const timeLeft = this.end - currentTime;
 
-    this.remaining = timeLeft;
-
-    if ( this.remaining <= 0 ) {
-      this.stop();
-    }
+    this.remaining = this.end - currentTime;
 
     return this.remaining;
   }
