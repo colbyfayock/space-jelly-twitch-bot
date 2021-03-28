@@ -9,7 +9,7 @@ module.exports = {
    */
 
   help: {
-    init: async ({ config = {} } = {}) => {
+    handler: async ({ config = {} } = {}) => {
       const { client, prefix } = config;
       const { channels, userstate } = client;
       const datetime = new Date().toISOString();
@@ -35,7 +35,7 @@ module.exports = {
    */
 
   questions: {
-    init: async ({ config = {} } = {}) => {
+    handler: async ({ config = {} } = {}) => {
       const { client, prefix, globals } = config;
       const { channels, userstate } = client;
       const datetime = new Date().toISOString();
@@ -58,7 +58,7 @@ module.exports = {
   },
 
   timeleft: {
-    init: async ({ config = {} } = {}) => {
+    handler: async ({ config = {} } = {}) => {
       const { client, prefix, globals } = config;
       const { channels, userstate } = client;
       const datetime = new Date().toISOString();
