@@ -135,42 +135,60 @@ module.exports = {
       return `Adding ${timeToAdd.number} ${timeToAdd.unit} to the clock!`
     },
     onCommand: ({ argument: time, config }) => {
+      const { socket, globals } = config;
+
       const timeToAdd = parseHumanTime(time);
 
-      if ( !config.globals.cmtimer || !config.globals.cmtimer.isActive) {
+      if ( !globals.cmtimer || !globals.cmtimer.isActive) {
         const error = new Error('Failed to add time: No active timer');
         error.name = 'NO_ACTIVE_TIMER';
         throw error;
       }
 
       if ( timeToAdd.unit === 'seconds' ) {
-        config.globals.cmtimer.add(timeToAdd.number * 1000);
+        globals.cmtimer.add(timeToAdd.number * 1000);
       } else if ( timeToAdd.unit === 'minutes' ) {
-        config.globals.cmtimer.add(timeToAdd.number * 60 * 1000);
+        globals.cmtimer.add(timeToAdd.number * 60 * 1000);
       }
+
+      socket.broadcast({
+        type: 'command',
+        command: 'cmadd'
+      });
     }
   },
   cmstart: {
     access: ['admin'],
-    response: [
-      '60 minutes on the clock!',
-      `3... 2... 1... Let's gooooo!`
-    ],
+    response: `3... 2... 1... Let's gooooo!`,
     onCommand: ({ config }) => {
-      if ( config.globals.cmtimer ) {
-        config.globals.cmtimer.start();
+      const { socket, globals } = config;
+
+      if ( globals.cmtimer ) {
+        globals.cmtimer.start();
         return;
       }
 
       config.globals.cmtimer = new Timer(60 * 60 * 1000);
       config.globals.cmtimer.start();
+
+      socket.broadcast({
+        type: 'command',
+        command: 'cmstart'
+      });
     }
   },
   cmpause: {
     access: ['admin'],
     response: 'Taking a quick break.',
     onCommand: async ({ config }) => {
-      config.globals.cmtimer.stop();
+      const { socket, globals } = config;
+
+      globals.cmtimer.stop();
+
+      socket.broadcast({
+        type: 'command',
+        command: 'cmpause'
+      });
     }
   },
   cmremove: {
@@ -180,26 +198,40 @@ module.exports = {
       return `Removing ${timeToAdd.number} ${timeToAdd.unit} from the clock!`
     },
     onCommand: ({ argument: time, config }) => {
+      const { socket, globals } = config;
+
       const timeToAdd = parseHumanTime(time);
 
-      if ( !config.globals.cmtimer || !config.globals.cmtimer.isActive) {
+      if ( !globals.cmtimer || !globals.cmtimer.isActive) {
         const error = new Error('Failed to remove time: No active timer');
         error.name = 'NO_ACTIVE_TIMER';
         throw error;
       }
 
       if ( timeToAdd.unit === 'seconds' ) {
-        config.globals.cmtimer.remove(timeToAdd.number * 1000);
+        globals.cmtimer.remove(timeToAdd.number * 1000);
       } else if ( timeToAdd.unit === 'minutes' ) {
-        config.globals.cmtimer.remove(timeToAdd.number * 60 * 1000);
+        globals.cmtimer.remove(timeToAdd.number * 60 * 1000);
       }
+
+      socket.broadcast({
+        type: 'command',
+        command: 'cmremove'
+      });
     }
   },
   cmstop: {
     access: ['admin'],
     response: 'Clock officially stopped.',
     onCommand: ({ config }) => {
-      config.globals.cmtimer = null;
+      const { socket, globals } = config;
+
+      globals.cmtimer = null;
+
+      socket.broadcast({
+        type: 'command',
+        command: 'cmstop'
+      });
     }
   }
 }
