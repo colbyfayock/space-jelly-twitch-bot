@@ -21,6 +21,8 @@ module.exports = {
 
       console.log(`${prefix} - ${datetime} - Helping channels ${channels.join(', ')}`);
 
+      if ( !globals.cmtimer || !globals.cmtimer.isActive) return;
+
       channels.forEach(async channel => {
         const user = new User().ingestFromContext(userstate[channel]);
         await execCommand({
